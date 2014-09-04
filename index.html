@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html ng-app="mcApp">
+	<head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>Metacommunication</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <!-- <link rel="stylesheet" href="css/bootstrap-theme.min.css"> -->
+        <link rel="stylesheet" href="css/app.css">
+        <script src="js/vendor/pdf.js"></script>
+    </head>
+    <body>
+    <div class="container-fluid">
+		<!-- Example row of columns -->
+		<div class="row">
+			<div id="left" class="col-md-4" ng-controller="UploadSourceController">
+				<fieldset>
+				<legend>Add Files</legend>
+				<div class="form-group">
+					<label for="exampleInputFile">File input</label>
+					<input type="file" id="fileToUpload" multiple onchange="angular.element(this).scope().setFiles(this)"/>
+					<div id="dropbox" class="dropbox" ng-class="dropClass"><span>{{dropText}}</span></div>
+					
+					<div class="inputFormat">
+						<input type="radio" ng-model="inputFormat" value="csvBOB" id="csvBOB"><label for="csvBOB">bob.csv</label>
+						<input type="radio" ng-model="inputFormat" value="csvTELERING" id="csvTELERING"><label for="csvTELERING">telering.csv</label>
+						<input type="radio" ng-model="inputFormat" value="csvTMOB" id="csvTMOB"><label for="csvTMOB">t-mobile.csv</label>
+						<input type="radio" ng-model="inputFormat" value="csvYES" id="csvYES"><label for="csvYES">yes.csv</label>
+						<input type="radio" ng-model="inputFormat" value="sqlite" id="sqlite"><label for="sqlite">SQLite</label>
+						<input type="radio" ng-model="inputFormat" value="pdfDrei" id="pdfDrei"><label for="pdfDrei">Drei.pdf</label>
+						<input type="radio" ng-model="inputFormat" value="pdfA1" id="pdfA1"><label for="pdfA1">A1.pdf</label>
+					</div>
+					
+   					<div class="right">
+						<input type="button" ng-click="processFiles()" value="Process" ng-disabled="!files || files.length == 0 || !inputFormat || disableBtn" class="btn btn-primary" />
+					</div>
+					
+					<div class="progress">
+						<div class="progress-bar" role="progressbar" aria-valuenow="{{getProgress()}}" aria-valuemin="0" aria-valuemax="100" ng-style="{width: (getProgress()+'%')}">{{getProgress()}}%</div>
+					</div>
+
+					<div ng-show="showSuccess" class="alert alert-success">All files are imported!</div>
+					<div ng-show="showError" class="alert alert-danger">Files could not be imported!</div>
+					<!-- list of uploaded files -->
+					<div ng-show="files.length">
+       					<div ng-repeat="file in files.slice(0)">
+           					<span>{{file.webkitRelativePath || file.name}}</span>
+           					(<span ng-switch="file.size > 1024*1024">
+               					<span ng-switch-when="true">{{file.size / 1024 / 1024 | number:2}} MB</span>
+               					<span ng-switch-default>{{file.size / 1024 | number:2}} kB</span>
+           					</span>)
+       					</div>
+   					</div>
+				</div> <!-- /controller-UploadSources -->
+				</fieldset>
+				
+				<fieldset>
+					<legend>Available Sources</legend>
+					<div class="form-group">
+						<div ng-show="getFiles()">
+							<div ng-repeat="file in getFiles()">
+							    <span>{{file}}</span>
+							</div>
+						</div>
+					</div>
+				</fieldset>
+				
+			</div> <!-- /UploadSourceController -->
+			
+			<div ng-controller="VisualisationController"> <!-- class="col-md-8 col-md-offset-4" -->
+			<tabset class="col-md-8" id="right" >
+	    		<tab heading="Barcharts">
+					<div> <!-- ng-hide="!inputFormat || inputFormat == 'sqlite'" -->
+						<fieldset>
+							<legend>BarChart Visualisation Telephony</legend>
+							<div id="BCtooltipTEL"><p>&nbsp;<br/>&nbsp;</p></div>
+							<bar-chart service="TEL" data="data"></bar-chart>
+						</fieldset>
+				   	</div>
+					<div> <!-- ng-hide="!inputFormat || inputFormat == 'sqlite'" -->
+						<fieldset>
+							<legend>BarChart Visualisation SMS</legend>
+							<div id="BCtooltipSMS"><p>&nbsp;<br/>&nbsp;</p></div>
+							<bar-chart service="SMS" data="data"></bar-chart>
+						</fieldset>
+				   	</div>
+		   			<div> <!-- ng-hide="!inputFormat || inputFormat == 'sqlite'" -->
+						<fieldset>
+							<legend>BarChart Visualisation Data</legend>
+							<div id="BCtooltipDATA"><p>&nbsp;<br/>&nbsp;</p></div>
+							<bar-chart service="DATA" data="data"></bar-chart>
+						</fieldset>
+				   	</div>
+				   	<div> <!-- ng-hide="!inputFormat || inputFormat != 'sqlite'" -->
+						<fieldset>
+							<legend>BarChart Visualisation Whatsapp</legend>
+							<div id="BCtooltipWHATSAPP"><p>&nbsp;<br/>&nbsp;</p></div>
+							<bar-chart service="WHATSAPP" data="data"></bar-chart>
+						</fieldset>
+				   	</div>
+			   	</tab> <!-- BarCharts -->
+			   	
+			   	<tab heading="Streamgraphs">
+					<div> <!-- ng-hide="!inputFormat || inputFormat == 'sqlite'" -->
+						<fieldset>
+							<legend>StreamGraph Visualisation Telephony</legend>
+							<div id="SGtooltipTEL"><p>&nbsp;<br/>&nbsp;<br/>&nbsp;</p></div>
+							<stream-graph service="TEL" data="data"></stream-graph>
+						</fieldset>
+				   	</div>
+
+					<div> <!-- ng-hide="!inputFormat || inputFormat == 'sqlite'" -->
+						<fieldset>
+							<legend>StreamGraph Visualisation SMS</legend>
+							<div id="SGtooltipSMS"><p>&nbsp;<br/>&nbsp;<br/>&nbsp;</p></div>
+							<stream-graph service="SMS" data="data"></stream-graph>
+						</fieldset>
+				   	</div>
+		   			<div> <!-- ng-hide="!inputFormat || inputFormat == 'sqlite'" -->
+						<fieldset>
+							<legend>StreamGraph Visualisation Data</legend>
+							<div id="SGtooltipDATA"><p>&nbsp;<br/>&nbsp;<br/>&nbsp;</p></div>
+							<stream-graph service="DATA" data="data"></stream-graph>
+						</fieldset>
+				   	</div>
+				   	<div> <!-- ng-hide="!inputFormat || inputFormat != 'sqlite'" -->
+						<fieldset>
+							<legend>StreamGraph Visualisation Whatsapp</legend>
+							<div id="SGtooltipDATA"><p>&nbsp;<br/>&nbsp;<br/>&nbsp;</p></div>
+							<stream-graph service="WHATSAPP" data="data"></stream-graph>
+						</fieldset>
+				   	</div>
+				   	
+			   	</tab> <!-- Streamgraphs -->
+			   	
+			   	<tab heading="Forcegraph">
+					<div> <!-- ng-hide="!inputFormat" style="height: 100%; width: 100%;" -->
+						<fieldset>
+							<legend>Forcegraph</legend>
+							<button id="btnFGFS" ng-click="toggleFullscreen()" class="btn btn-xs" style="position: absolute; z-index: 1;"><span class="glyphicon glyphicon-resize-full"></span></button>
+							<force-graph data="data"></force-graph>
+						</fieldset>
+				   	</div>
+			   	</tab> <!-- Forcegraph -->			   	
+		  	</tabset>
+			
+		  </div>
+		</div> <!-- /container -->
+		
+		<footer>
+			<div style="float: left;">&copy; Gerald Weber 2014</div>
+			<div style="float: right;">Masterthesis METACOMMUNICATION @ FH Campus Wien ITS14</div>
+		</footer>
+		        
+		<!-- <script src="js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script> -->
+		<!-- <script src="js/vendor/jquery-1.11.0.min.js"></script> -->
+		<!-- <script src="js/vendor/bootstrap.min.js"></script> -->
+		
+		<script src="js/vendor/d3.min.js"></script>
+		<script src="js/vendor/angular.min.js"></script>
+		<script src="js/vendor/ui-bootstrap-tpls-0.11.0.min.js"></script>
+		<script src="js/vendor/sql.js"></script>
+        <script src="js/reusableBarChart_v2.js"></script>
+        <script src="js/reusableStreamGraph_v2.js"></script>
+        <script src="js/reusableForceGraph_v2.js"></script>
+		<script src="js/app.js"></script> <!-- angluarjs -->
+		<script src="js/services.js"></script> <!-- angluarjs -->
+		<script src="js/directives.js"></script> <!-- angluarjs -->
+		<script src="js/controllers.js"></script> <!-- angluarjs -->
+						
+    </body>
+</html>

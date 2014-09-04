@@ -1,0 +1,95 @@
+/* d3 settings */
+
+.axis {
+    font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: black;
+    shape-rendering: crispEdges;
+}
+
+.bar {
+    fill: steelblue;
+}
+
+
+#forceGraph > g > g > g.nodes-group.fixed > circle {
+  stroke: red;
+  stroke-width: 2px;
+}
+
+/* app css stylesheet */
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  margin-bottom: 40px;
+}
+footer {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 40px;
+  padding: 10px;
+  background-color: #DDD;
+  color: #333;
+}
+
+.progress {
+	clear: both;
+	margin: 5px 0 5px 0;
+}
+
+.inputFormat {
+	margin: 5px 0 5px 0;
+	border: 2px solid #DDD;
+    border-radius: 8px;
+}
+
+.inputFormat input[type=radio] {
+	margin: 10px 0 10px 20px;
+}
+
+.right {
+	float: right;
+	height: 3em;
+}
+
+
+
+
+.uploaded {
+    padding: 0;
+    height: 14px;
+    border-radius: 10px;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#66cc00), to(#4b9500));
+    border-image: initial;
+}
+
+/* dropbox */
+.dropbox {
+    /*width: 15em;*/
+    height: 3em;
+    border: 2px solid #DDD;
+    border-radius: 8px;
+    background-color: #FEFFEC;
+    text-align: center;
+    color: #BBB;
+    font-size: 2em;
+    font-family: Arial, sans-serif;
+}
+.dropbox span {
+    margin-top: 0.9em;
+    display: block;
+}
+.dropbox.not-available {
+    background-color: #F88;
+}
+.dropbox.over {
+    background-color: #bfb;
+}
